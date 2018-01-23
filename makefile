@@ -11,7 +11,7 @@ BINDIR = bin
 VPATH = $(SRCDIR):$(OBJDIR)
 FULLTARGET = $(BINDIR)/$(TARGET)
 
-OBJFILES = main.o dither_rnd.o common.o
+OBJFILES = main.o dither_rnd.o floyd_steinberg.o common.o
 
 INCLUDES = -I/Library/Frameworks/SDL2.framework/Headers/
 INCLUDES += -I/Library/Frameworks/SDL2_image.framework/Headers/

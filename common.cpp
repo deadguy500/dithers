@@ -1,6 +1,26 @@
 #include <SDL2/SDL.h>
 #include <stdlib.h>
 
+uint32_t getPixel(SDL_Surface* s, int x, int y)
+{
+	return ((uint32_t*)s->pixels)[(y * s->w) + x];
+}
+
+void setPixel(SDL_Surface* s, int x, int y, uint32_t p)
+{
+	((uint32_t*)s->pixels)[(y * s->w) + x] = p;
+}
+
+void setPixelRgb(SDL_Surface* s, int x, int y, uint8_t r, uint8_t g, uint8_t b)
+{
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	uint32_t p = ((uint32_t)r << 24) | ((uint32_t)g << 16) | ((uint32_t)b << 8) | (uint32_t)0xff;
+#else
+	uint32_t p = ((uint32_t)0xff << 24) | ((uint32_t)b << 16) | ((uint32_t)g << 8) | (uint32_t)r;
+#endif
+
+	setPixel(s, x, y, p);
+}
 
 void rgbToHsb(int r, int g, int b, float* hue, float* saturation, float* brightness) 
 {

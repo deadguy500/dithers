@@ -27,7 +27,7 @@ SDL_Surface* randomDither(SDL_Surface* src)
 	{
 		for (uint32_t y = 0; y < src->h; y++) 
 		{
-			uint32_t p = ((uint32_t*)src->pixels)[(y * src->w) + x];
+			uint32_t p = getPixel(src, x, y);
 			float bn = brightness(p);
 			int32_t rnd = (rand() % 128) - 64;
 			
@@ -35,11 +35,11 @@ SDL_Surface* randomDither(SDL_Surface* src)
 			
 			if (k < 128) 
 			{
-				((uint32_t*)dest->pixels)[(y * src->w) + x] = 0xff000000;
+				setPixelRgb(dest, x, y, 0x00, 0x00, 0x00);
 			}
 			else 
 			{
-				((uint32_t*)dest->pixels)[(y * src->w) + x] = 0xffffffff;
+				setPixelRgb(dest, x, y, 0xff, 0xff, 0xff);
 			}
 		}
 	}

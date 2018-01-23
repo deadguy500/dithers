@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string>
 #include "dither_rnd.h"
+#include "floyd_steinberg.h"
 
 #define SCREEN_WIDTH		605
 #define SCREEN_HEIGHT		454
@@ -73,7 +74,10 @@ int main( int argc, char* args[] )
 
 	SDL_Event e;
 
-	SDL_Surface* dither = randomDither(image);
+	SDL_Surface* rndDither = randomDither(image);
+	SDL_Surface* fsDither = floydSteinberg(image);
+
+	uint32_t ditherState = 0;
 
 	while(!quit)
 	{
@@ -83,9 +87,59 @@ int main( int argc, char* args[] )
 			{
 				quit = true;
 			}
+
+			if (e.type == SDL_KEYDOWN)
+		    {
+		        if (e.key.keysym.sym == SDLK_ESCAPE)
+		        {
+		            quit = true;
+		        }
+				else if(e.key.keysym.sym == SDLK_F1)
+				{
+					ditherState = 0;
+				}
+				else if(e.key.keysym.sym == SDLK_F2)
+				{
+					ditherState = 1;					
+				}
+				else if(e.key.keysym.sym == SDLK_F3)
+				{
+					ditherState = 2;
+				}
+				else if(e.key.keysym.sym == SDLK_F4)
+				{
+					ditherState = 3;
+				}
+			}
 		}
 
-		SDL_BlitSurface(dither, NULL, screen, NULL);
+		switch(ditherState)
+		{
+			case 1:
+				SDL_BlitSurface(rndDither, NULL, screen, NULL);
+				break;
+
+			case 2:
+				if(rndDither != NULL)
+				{
+					SDL_FreeSurface(rndDither);
+					rndDither = NULL;
+				}
+				
+				rndDither = randomDither(image);
+				SDL_BlitSurface(rndDither, NULL, screen, NULL);
+				break;
+
+			case 3:
+				SDL_BlitSurface(fsDither, NULL, screen, NULL);
+				break;
+
+			case 0:
+			default:
+				SDL_BlitSurface(image, NULL, screen, NULL);
+				break;
+		}
+
 		SDL_UpdateWindowSurface(mainWindow);
 	}
 
@@ -95,8 +149,11 @@ int main( int argc, char* args[] )
 	SDL_DestroyWindow(mainWindow);
 	mainWindow = NULL;
 
-	SDL_FreeSurface(dither);
-	dither = NULL;
+	SDL_FreeSurface(rndDither);
+	rndDither = NULL;
+
+	SDL_FreeSurface(fsDither);
+	fsDither = NULL;
 
 	IMG_Quit();
 	SDL_Quit();
